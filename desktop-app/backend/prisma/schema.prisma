@@ -1,0 +1,114 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  email        String           @unique
+  passwordHash String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  jobs         Job[]
+  contacts     CompanyContact[]
+  preferences  UserPreference[]
+  campaigns    EmailCampaign[]
+  settings     SystemSetting[]
+}
+
+model Job {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @db.ObjectId
+  user                User      @relation(fields: [userId], references: [id])
+  jobId               String    @unique // LinkedIn Job ID
+  title               String
+  company             String
+  location            String
+  applyUrl            String?
+  linkedinUrl         String
+  description         String
+  experienceRequired  String?
+  employmentType      String?
+  postedAt            DateTime?
+  score               Float?    // Match rating from Gemini (e.g., 0.0 to 5.0)
+  matchAnalysis       String?   // JSON details of skills and analysis
+  status              String    // Scraped, Evaluating, Queue, Applied_Auto, Applied_Manual, Requires_Action, Skipped, Failed
+  skipReason          String?   // Reason if skipped (e.g. "Already Applied")
+  unresolvedQuestions String?   // JSON string of questions Playwright couldn't answer
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model CompanyContact {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @db.ObjectId
+  user         User      @relation(fields: [userId], references: [id])
+  companyName  String
+  contactName  String
+  contactTitle String   // Recruiter, HR, Cofounder
+  email        String
+  linkedinUrl  String?
+  emailDraft   String?   // Gemini-generated cold email draft
+  status       String    // Drafted, Sent, Failed, Replied
+  sentAt       DateTime?
+  campaignId   String?   @db.ObjectId
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userId, companyName, email])
+}
+
+model ScreeningQuestion {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  questionText String   // The exact question label text
+  answerText   String   // User provided answer
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, questionText])
+}
+
+model UserPreference {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id])
+  roles        String[]
+  experience   String[]
+  techStack    String[]
+  locations    String[]
+  excludeCos   String[] // Excluded Companies
+  excludeRls   String[] // Excluded Roles
+  rawJson      String   // Backing config editor string
+  chatHistory  String   // JSON string of chatbot messages array
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId])
+}
+
+model EmailCampaign {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  template  String   // Template with placeholders
+  subject   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SystemSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  key       String
+  value     String   // Encrypted text value
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, key])
+}

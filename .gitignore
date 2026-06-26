@@ -1,0 +1,41 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Build outputs
+dist/
+build/
+public/
+temp-package/
+web-portal/backend/public/
+web-portal/backend/dist/
+desktop-app/backend/public/
+desktop-app/backend/dist/
+web-portal/backend/downloads/*.zip
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Local environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production.local
+web-portal/backend/.env
+desktop-app/backend/.env
+
+# Editor files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
