@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: '../backend/public',
-    emptyOutDir: true
+    outDir: 'dist',
+    emptyOutDir: true,
   },
   server: {
     port: 3001,
@@ -14,7 +14,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:5001',
         changeOrigin: true,
-      }
-    }
-  }
+      },
+    },
+  },
 });
