@@ -104,7 +104,7 @@ router.get('/download', authenticate, async (req: AuthenticatedRequest, res) => 
       return res.status(403).json({ error: 'Access denied. Please pay 1 Rupee to unlock the download.' });
     }
 
-    const zipPath = path.join(__dirname, '../downloads/desktop-app.zip');
+    const zipPath = path.join(__dirname, '../../downloads/desktop-app.zip');
     if (!fs.existsSync(zipPath)) {
       logger.error(`Desktop app zip file not found at: ${zipPath}`);
       return res.status(404).json({ error: 'Desktop build file not found. Please contact support or rebuild.' });
