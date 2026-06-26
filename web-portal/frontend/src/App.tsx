@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react';
 import { Zap, Shield, Key, Download, CheckCircle, HelpCircle, Lock, ArrowRight } from 'lucide-react';
 
 export default function App() {
+  const API_BASE = import.meta.env.VITE_API_URL || '';
   const [token, setToken] = useState<string | null>(localStorage.getItem('jobhit_portal_token'));
   const [email, setEmail] = useState<string | null>(localStorage.getItem('jobhit_portal_email'));
   const [hasPaid, setHasPaid] = useState<boolean>(false);
-  
+
   const [view, setView] = useState<'landing' | 'auth' | 'unlocked'>('landing');
   const [isRegistering, setIsRegistering] = useState(false);
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
@@ -25,7 +26,7 @@ export default function App() {
 
   const loadProfile = async () => {
     try {
-      const res = await fetch('/api/auth/me', {
+      const res = await fetch(`${API_BASE}/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -54,7 +55,7 @@ export default function App() {
     e.preventDefault();
     setStatusMsg('');
     setIsLoading(true);
-    const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
+    const endpoint = isRegistering ? `${API_BASE}/api/auth/register` : `${API_BASE}/api/auth/login`;
 
     try {
       const res = await fetch(endpoint, {
@@ -85,7 +86,7 @@ export default function App() {
   const triggerMockPayment = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/auth/pay', {
+      const res = await fetch(`${API_BASE}/api/auth/pay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +113,7 @@ export default function App() {
 
   const triggerDownload = async () => {
     try {
-      const res = await fetch('/api/auth/download', {
+      const res = await fetch(`${API_BASE}/api/auth/download`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) {
@@ -120,7 +121,7 @@ export default function App() {
         alert(err.error || 'Download failed.');
         return;
       }
-      
+
       // Handle file download
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
@@ -138,7 +139,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      
+
       {/* Premium Navbar */}
       <header style={{
         display: 'flex',
@@ -170,7 +171,7 @@ export default function App() {
 
       {/* Main Panel Content Area */}
       <main style={{ flex: 1, padding: '3rem 2rem', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
-        
+
         {/* VIEW 1: LANDING PAGE */}
         {view === 'landing' && (
           <div style={{ animation: 'fadeIn 0.4s ease-out' }}>
@@ -199,7 +200,7 @@ export default function App() {
                 WebkitTextFillColor: 'transparent',
                 lineHeight: '1.2'
               }}>
-                The Smartest AI Job Scraper & <br/>Auto-Applier, Runs on Your Desktop
+                The Smartest AI Job Scraper & <br />Auto-Applier, Runs on Your Desktop
               </h1>
               <p style={{
                 color: 'var(--text-secondary)',
@@ -210,7 +211,7 @@ export default function App() {
               }}>
                 Scrapes targeted LinkedIn positions, evaluates them against your custom profile using Gemini AI, and auto-applies with Playwright. Stored locally, secure, and immune to account limits.
               </p>
-              
+
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                 <button className="btn btn-primary" style={{ padding: '0.8rem 1.75rem', fontSize: '0.95rem' }} onClick={() => { setView('auth'); setIsRegistering(true); }}>
                   Get Started Now <ArrowRight size={18} style={{ marginLeft: '0.25rem' }} />
@@ -292,29 +293,29 @@ export default function App() {
                 <Zap size={28} style={{ color: 'var(--accent-secondary)' }} />
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{isRegistering ? 'Create Portal Account' : 'Log In to Portal'}</h2>
               </div>
-              
+
               <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div className="form-group">
                   <label>Email Address</label>
-                  <input 
-                    type="email" 
-                    className="form-input" 
-                    value={authEmail} 
-                    onChange={e => setAuthEmail(e.target.value)} 
-                    placeholder="e.g. you@example.com" 
-                    required 
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={authEmail}
+                    onChange={e => setAuthEmail(e.target.value)}
+                    placeholder="e.g. you@example.com"
+                    required
                   />
                 </div>
 
                 <div className="form-group">
                   <label>Password</label>
-                  <input 
-                    type="password" 
-                    className="form-input" 
-                    value={authPassword} 
-                    onChange={e => setAuthPassword(e.target.value)} 
-                    placeholder="Enter password" 
-                    required 
+                  <input
+                    type="password"
+                    className="form-input"
+                    value={authPassword}
+                    onChange={e => setAuthPassword(e.target.value)}
+                    placeholder="Enter password"
+                    required
                   />
                 </div>
 
@@ -349,12 +350,12 @@ export default function App() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2.5rem', alignItems: 'start' }}>
-              
+
               {/* Left Column: Detailed Capacity Showcase */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div className="glass-panel" style={{ padding: '2rem' }}>
                   <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.25rem', color: '#ffffff' }}>Desktop Product Capacity & Tech Specifications</h2>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
                       <span style={{ color: 'var(--text-secondary)' }}>Scraper Engine:</span>
@@ -403,7 +404,7 @@ export default function App() {
 
               {/* Right Column: Download & License Section */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                
+
                 {hasPaid ? (
                   <div className="glass-panel" style={{ padding: '2.5rem', border: '2px solid var(--accent-secondary)', background: 'rgba(20, 184, 166, 0.04)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--color-success)' }}>
@@ -413,11 +414,11 @@ export default function App() {
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
                       Thank you! You have unlocked the full local desktop application. Download your packaged archive below.
                     </p>
-                    
+
                     <button className="btn btn-primary" style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem' }} onClick={triggerDownload}>
                       <Download size={18} /> Download Desktop App (.zip)
                     </button>
-                    
+
                     <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                       <strong>Archive details:</strong>
                       <div style={{ marginTop: '0.35rem' }}>Name: <code>desktop-app.zip</code></div>
@@ -433,7 +434,7 @@ export default function App() {
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '2rem', lineHeight: '1.5' }}>
                       Unlock lifetime access to the pre-packaged local build by completing the symbolic 1-Rupee activation.
                     </p>
-                    
+
                     <div style={{
                       fontSize: '3rem',
                       fontWeight: 900,
@@ -548,7 +549,7 @@ export default function App() {
                     <rect x="70" y="70" width="25" height="10" fill="#000000" />
                     <rect x="80" y="85" width="15" height="5" fill="#000000" />
                     <rect x="35" y="80" width="5" height="10" fill="#000000" />
-                    
+
                     {/* Tiny lightning icon in middle of QR */}
                     <path d="M48,35 L40,55 L47,55 L45,70 L55,48 L48,48 Z" fill="#6366f1" />
                   </svg>

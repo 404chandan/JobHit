@@ -28,6 +28,7 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 web-portal/backend/.env
+web-portal/frontend/.env
 desktop-app/backend/.env
 
 # Editor files
